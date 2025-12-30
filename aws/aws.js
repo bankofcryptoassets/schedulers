@@ -12,15 +12,15 @@ const client = new SecretsManagerClient({ region: process.env.AWS_REGION })
 * @param {string} secretName - AWS Secrets Manager secret name
 * @returns {Promise<string>} - Private key string
 */
-const getExecutorPrivKeyBySecretName = async (secretName) => {
+const getPrivKeyBySecretName = async (secretName, key) => {
     if(process.env.NODE_ENV === 'development') {
-        return process.env.RELAY_EXECUTOR_PRIVATE_KEY
+        return process.env[key];
     }
-    const command = new GetSecretValueCommand({ SecretId: secretName })
-    const resp = await client.send(command)
-    const secret = JSON.parse(resp.SecretString)
-    return secret.RELAY_EXECUTOR_PRIVATE_KEY
+    const command = new GetSecretValueCommand({ SecretId: secretName });
+    const resp = await client.send(command);
+    const secret = JSON.parse(resp.SecretString);
+    return secret[key];
 }
   
-module.exports = { getExecutorPrivKeyBySecretName }
+module.exports = { getPrivKeyBySecretName }
   
